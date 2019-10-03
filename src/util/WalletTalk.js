@@ -71,6 +71,14 @@ export default class WalletTalk {
 					/************************************/
 					/**       SIGNING & WALLET         **/
 					/************************************/
+					availableBlockchains:() => {
+						return {
+							EOSIO:'eos',
+							ETH:'eth',
+							TRX:'trx',
+							BTC:'btc',
+						}
+					},
 					exists:() => true,
 					unlocked:() => true,
 					unlock:() => fakeScatter,

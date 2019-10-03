@@ -10,7 +10,7 @@ import PopupService from "../services/utility/PopupService";
 
 export default class WalletHelpers {
 
-	static init(){
+	static async init(){
 		const eventListener = async (type, data) => {
 			console.log('event listener', type, data);
 			if(type === 'popout') {
@@ -22,21 +22,23 @@ export default class WalletHelpers {
 		};
 
 
+		const blockchains = await window.wallet.availableBlockchains();
+
+		const blockchainSupport = { blockchains };
+
+		blockchainSupport.plugins = Object.keys(blockchainSupport.blockchains).map(key => {
+			switch(blockchainSupport.blockchains[key]){
+				case 'eos': return (require('@walletpack/eosio').default);
+				case 'btc': return (require('@walletpack/bitcoin').default);
+				case 'eth': return (require('@walletpack/ethereum').default);
+				case 'trx': return (require('@walletpack/tron').default);
+			}
+		});
+
+		console.log('blockchainSupport', blockchainSupport);
+
 		WalletPack.initialize(
-			{
-				blockchains:{
-					EOSIO:'eos',
-					ETH:'eth',
-					TRX:'trx',
-					BTC:'btc',
-				},
-				plugins:[
-					require('@walletpack/eosio').default,
-					require('@walletpack/ethereum').default,
-					require('@walletpack/tron').default,
-					require('@walletpack/bitcoin').default,
-				]
-			},
+			blockchainSupport,
 			store,
 			{
 				getSalt:window.wallet.getSalt,
